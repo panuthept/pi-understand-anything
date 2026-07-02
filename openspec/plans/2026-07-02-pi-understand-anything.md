@@ -291,13 +291,13 @@ export function startDashboardServer(projectRoot: string): Promise<ServerInstanc
 }
 ```
 
-- [ ] **Step 2: Type-check**
+- [x] **Step 2: Type-check**
 
 ```bash
 cd ~/.pi/agent/extensions/pi-understand-anything && npx tsc --noEmit 2>&1 || echo "Expected: errors unless index.ts is present"
 ```
 
-The file is valid; errors from missing index.ts are expected until Task 4.
+The file is valid.
 
 ---
 
