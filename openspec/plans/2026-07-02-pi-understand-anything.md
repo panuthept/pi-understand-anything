@@ -570,57 +570,11 @@ Expected: 7 agent `.md` files.
 - Consumes: Original `skills/understand/SKILL.md` from UA monorepo (the full 800+ line pipeline)
 - Produces: A pi-compatible skill that references pi tools and paths
 
-- [ ] **Step 1: Copy and adapt the skill**
+- [x] **Step 1: Copy and adapt the skill**
 
-Porting changes (systematic):
-1. `CLAUDE_PLUGIN_ROOT` → resolve via `import.meta.url` equivalent or extension's hardcoded root
-2. `Agent({ subagent_type: "file-analyzer"})` stays the same — pi-subagents uses identical syntax
-3. `Bash` tool → `bash` (lowercase, same in pi)
-4. `Read` tool → `read` (lowercase)
-5. `$ARGUMENTS` → passed as command args
-6. Agent path resolution: `~/.agents/skills/...` → `~/.pi/agent/extensions/pi-understand-anything/agents/`
-7. Dashboard path resolution: added `/homepage/` and `~/.pi/understand-anything/` paths to search list
-8. Changed dashboard paths to include pi's install locations
+Porting changes applied systematically. PI_EXTENSION_ROOT references replaced with direct paths.
 
-Write the adapted content starting with:
-
-```markdown
----
-name: understand
-description: Analyze a codebase to produce an interactive knowledge graph for understanding architecture, components, and relationships
-argument-hint: ["[path] [--full|--auto-update|--no-auto-update|--review|--language <lang>]"]
----
-
-# /understand
-
-Analyze the current codebase and produce a `knowledge-graph.json` file in `.understand-anything/`. This file powers the interactive dashboard for exploring the project's architecture.
-
-## Options
-
-- `$ARGUMENTS` may contain:
-  - `--full` — Force a full rebuild, ignoring any existing graph
-  - `--auto-update` — Enable automatic graph updates on commit
-  - `--no-auto-update` — Disable automatic graph updates
-  - `--review` — Run full LLM graph-reviewer instead of inline deterministic validation
-  - `--language <lang>` — Generate all textual content in the specified language
-  - A directory path (e.g. `/path/to/repo`) — Analyze the given directory
-
----
-
-## Progress Reporting
-
-[... phase content adapted from original, with pi tool references ...]
-```
-
-**Concrete text changes from the original:**
-- Replace `$CLAUDE_PLUGIN_ROOT/` with `$PI_EXTENSION_ROOT/` (or resolve from the extension's known path)
-- In Phase 6 (Dashboard path resolution), add `~/.pi/agent/extensions/pi-understand-anything/` to the search candidate list
-- All Agent calls remain unchanged (pi-subagents uses the same `Agent` tool signature)
-- All bash commands remain unchanged
-
-The rest of the ~800 lines of phase instructions stay verbatim — they're LLM-facing instructions, not platform-specific.
-
-- [ ] **Step 2: Verify file exists**
+- [x] **Step 2: Verify file exists**
 
 ```bash
 ls -la ~/.pi/agent/extensions/pi-understand-anything/skills/understand/SKILL.md
