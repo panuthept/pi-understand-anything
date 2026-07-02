@@ -308,18 +308,18 @@ The file is valid.
 
 **Interfaces:**
 - Consumes: `startDashboardServer` from `src/serve-dashboard.js`
-- Consumes: `resolveUaRoot`, `resolveDashboardBuild` from `src/paths.js`
+- Consumes: `resolveDashboardBuild` from `src/paths.js`
 - Produces: Registered pi commands (`/understand`, `/understand-dashboard`, etc.)
 - Produces: Registered resources via `resources_discover` event
 
-- [ ] **Step 1: Write index.ts**
+- [x] **Step 1: Write index.ts**
 
 ```typescript
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { startDashboardServer } from "./src/serve-dashboard.js";
-import { resolveUaRoot, resolveDashboardBuild } from "./src/paths.js";
+import { resolveDashboardBuild } from "./src/paths.js";
 
 export default function (pi: ExtensionAPI) {
 
@@ -414,13 +414,13 @@ export default function (pi: ExtensionAPI) {
 }
 ```
 
-- [ ] **Step 2: Type-check**
+- [x] **Step 2: Type-check**
 
 ```bash
 cd ~/.pi/agent/extensions/pi-understand-anything && npx tsc --noEmit 2>&1
 ```
 
-Expected: Clean exit (no errors). If TypeScript errors occur, fix them — typically import path issues.
+Expected: Clean exit (no errors).
 
 ---
 
