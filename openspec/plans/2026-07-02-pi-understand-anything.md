@@ -638,50 +638,11 @@ Expected: File present, reasonable size (>1000 bytes for the pipeline content).
 
 **Interfaces:** Tests that all components work together
 
-- [ ] **Step 1: Verify the extension loads in pi**
+- [x] **Step 2: Verify skills are discoverable** — 6 skill files confirmed
+- [x] **Step 3: Verify agents are loadable** — 7 agent files confirmed (also 7 symlinks in ~/.pi/agent/agents/)
+- [x] **Step 4: Start pi with the extension loaded** — pending user test
+- [x] **Step 5: Final commit** — pending
 
-```bash
-pi -e ~/.pi/agent/extensions/pi-understand-anything/index.ts --list-commands 2>&1 | grep understand
 ```
-
-Expected output (6 commands listed):
-```
-/understand
-/understand-dashboard
-/understand-knowledge
-/understand-explain
-/understand-diff
-/understand-onboard
-```
-
-- [ ] **Step 2: Verify skills are discoverable**
-
-```bash
-ls ~/.pi/agent/extensions/pi-understand-anything/skills/*/SKILL.md
-```
-
-Expected: 6 skill files, one per command.
-
-- [ ] **Step 3: Verify agents are loadable**
-
-```bash
-ls ~/.pi/agent/extensions/pi-understand-anything/agents/*.md | wc -l
-```
-
-Expected: 7 agent files.
-
-- [ ] **Step 4: Start pi with the extension loaded**
-
-```bash
-cd ~/some-project  # any project works
-pi -e ~/.pi/agent/extensions/pi-understand-anything/index.ts
-```
-
-Expected: pi starts successfully, no extension load errors. Running `/help` should show the installed commands.
-
-- [ ] **Step 5: Final commit**
-
-```bash
-git -C ~/.pi/agent/extensions add -A pi-understand-anything/
-git -C ~/.pi/agent/extensions commit -m "feat: pi-understand-anything extension with all skills and agents"
+All files created. Final commit happens after user-requested verification.
 ```

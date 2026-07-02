@@ -1,6 +1,7 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { startDashboardServer } from "./src/serve-dashboard.js";
 import { resolveDashboardBuild } from "./src/paths.js";
 
@@ -8,7 +9,7 @@ export default function (pi: ExtensionAPI) {
 
   // ── Resource discovery: register skills ──────────────────────────
   pi.on("resources_discover", async (_event, _ctx) => {
-    const extRoot = new URL(".", import.meta.url).pathname;
+    const extRoot = fileURLToPath(new URL(".", import.meta.url));
     return {
       skillPaths: [
         resolve(extRoot, "skills", "understand"),
