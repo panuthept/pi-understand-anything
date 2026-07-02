@@ -27,13 +27,13 @@
 - Consumes: UA monorepo at `~/.pi/agent/extensions/Understand-Anything/`
 - Produces: Directories and config for the extension itself
 
-- [ ] **Step 1: Create directory structure**
+- [x] **Step 1: Create directory structure**
 
 ```bash
 mkdir -p ~/.pi/agent/extensions/pi-understand-anything/{src,agents,skills/understand,skills/understand-dashboard,skills/understand-knowledge,skills/understand-explain,skills/understand-diff,skills/understand-onboard}
 ```
 
-- [ ] **Step 2: Write package.json**
+- [x] **Step 2: Write package.json**
 
 ```json
 {
@@ -56,7 +56,7 @@ mkdir -p ~/.pi/agent/extensions/pi-understand-anything/{src,agents,skills/unders
 
 **Ponytail note:** No npm deps needed — we resolve UA packages via filesystem paths. No build step required (pi loads .ts via jiti).
 
-- [ ] **Step 3: Write basic tsconfig.json**
+- [x] **Step 3: Write basic tsconfig.json**
 
 ```json
 {
@@ -72,7 +72,7 @@ mkdir -p ~/.pi/agent/extensions/pi-understand-anything/{src,agents,skills/unders
 }
 ```
 
-- [ ] **Step 4: Verify structure**
+- [x] **Step 4: Verify structure**
 
 ```bash
 ls -R ~/.pi/agent/extensions/pi-understand-anything/
@@ -80,7 +80,7 @@ ls -R ~/.pi/agent/extensions/pi-understand-anything/
 
 Expected: All directories and config files present.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git -C ~/.pi/agent/extensions add openspec/changes/2026-07-02-pi-understand-anything.md
