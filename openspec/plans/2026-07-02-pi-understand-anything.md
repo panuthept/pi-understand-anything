@@ -439,7 +439,7 @@ Expected: Clean exit (no errors).
 - Consumes: Original agent `.md` files from `~/.pi/agent/extensions/Understand-Anything/understand-anything-plugin/agents/`
 - Produces: pi-subagents-compatible agent `.md` files
 
-- [ ] **Step 1: Port project-scanner.md**
+- [x] **Step 1: Port project-scanner.md**
 
 Copy the original and replace frontmatter:
 
@@ -463,7 +463,7 @@ Key changes from original:
 - Add `max_turns: 20`
 - Body content stays identical
 
-- [ ] **Step 2: Port file-analyzer.md**
+- [x] **Step 2: Port file-analyzer.md**
 
 Same transformation: replace frontmatter, keep body.
 
@@ -479,7 +479,7 @@ max_turns: 30
 ---
 ```
 
-- [ ] **Step 3: Port architecture-analyzer.md**
+- [x] **Step 3: Port architecture-analyzer.md**
 
 ```markdown
 ---
@@ -490,7 +490,7 @@ max_turns: 20
 ---
 ```
 
-- [ ] **Step 4: Port domain-analyzer.md**
+- [x] **Step 4: Port domain-analyzer.md**
 
 ```markdown
 ---
@@ -501,7 +501,7 @@ max_turns: 20
 ---
 ```
 
-- [ ] **Step 5: Port tour-builder.md**
+- [x] **Step 5: Port tour-builder.md**
 
 ```markdown
 ---
@@ -512,7 +512,7 @@ max_turns: 15
 ---
 ```
 
-- [ ] **Step 6: Port graph-reviewer.md**
+- [x] **Step 6: Port graph-reviewer.md**
 
 ```markdown
 ---
@@ -523,7 +523,7 @@ max_turns: 15
 ---
 ```
 
-- [ ] **Step 7: Port assemble-reviewer.md**
+- [x] **Step 7: Port assemble-reviewer.md**
 
 ```markdown
 ---
@@ -534,7 +534,7 @@ max_turns: 10
 ---
 ```
 
-- [ ] **Step 8: Symlink agents into pi-subagents discovery path**
+- [x] **Step 8: Symlink agents into pi-subagents discovery path**
 
 The 7 agent `.md` files need to be discoverable by pi-subagents (which looks in `~/.pi/agent/agents/`). Symlink them from the extension directory so they stay in sync:
 
@@ -551,7 +551,7 @@ done
 
 This makes agents like `file-analyzer` available to `Agent({ subagent_type: "file-analyzer" })` calls.
 
-- [ ] **Step 9: Verify all agent files exist**
+- [x] **Step 9: Verify all agent files exist**
 
 ```bash
 ls -1 ~/.pi/agent/extensions/pi-understand-anything/agents/
