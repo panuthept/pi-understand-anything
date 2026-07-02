@@ -45,11 +45,15 @@ Incrementally update the knowledge graph using deterministic structural fingerpr
 
    2. Write the step 7 file list to `$PROJECT_ROOT/.understand-anything/intermediate/changed-files-pre.json` as a JSON array of relative paths.
 
-   3. Resolve `$PLUGIN_ROOT`:
-      - Use `$CLAUDE_PLUGIN_ROOT` if set (Claude Code's hook context sets this).
-      - Otherwise try `$HOME/.understand-anything-plugin`.
-      - Validate the chosen candidate by checking `$candidate/packages/core/dist/ignore-filter.js` exists.
-      - If neither resolves: report "Cannot locate plugin install at `$CLAUDE_PLUGIN_ROOT` or `$HOME/.understand-anything-plugin`; auto-update aborted. Run `/understand` to re-baseline." and **STOP**. Do **not** silently skip — silent skip reproduces issue #153.
+   3. Resolve `$PLUGIN_ROOT` (the pi-understand-anything extension root):
+      ```bash
+      SKILL_REAL=$(realpath "$PROJECT_ROOT/.pi/agent/extensions/pi-understand-anything/skills/understand" 2>/dev/null \
+        || realpath ~/.pi/agent/extensions/pi-understand-anything/skills/understand 2>/dev/null \
+        || echo "")
+      PLUGIN_ROOT=$([ -n "$SKILL_REAL" ] && cd "$SKILL_REAL/../.." 2>/dev/null && pwd || echo "")
+      ```
+      Validate by checking `$PLUGIN_ROOT/node_modules/@understand-anything/core/dist/ignore-filter.js` exists.
+      If it doesn't resolve: report "Cannot find pi-understand-anything extension root. Run `/understand` to re-baseline." and **STOP**. Do **not** silently skip.
 
    4. Write `$PROJECT_ROOT/.understand-anything/intermediate/ignore-filter.mjs`:
       ```javascript
@@ -62,7 +66,7 @@ Incrementally update the knowledge graph using deterministic structural fingerpr
       const inputPath = process.argv[3];
 
       const modUrl = pathToFileURL(
-        path.join(PLUGIN_ROOT, 'packages/core/dist/ignore-filter.js'),
+        path.join(PLUGIN_ROOT, 'node_modules/@understand-anything/core/dist/ignore-filter.js'),
       ).href;
       const { createIgnoreFilter } = await import(modUrl);
       const filter = createIgnoreFilter(PROJECT_ROOT);

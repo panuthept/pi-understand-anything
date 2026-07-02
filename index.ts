@@ -1,15 +1,15 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { startDashboardServer } from "./src/serve-dashboard.js";
 import { resolveDashboardBuild } from "./src/paths.js";
 
 export default function (pi: ExtensionAPI) {
+  const extRoot = fileURLToPath(new URL(".", import.meta.url));
 
   // ── Resource discovery: register skills ──────────────────────────
   pi.on("resources_discover", async (_event, _ctx) => {
-    const extRoot = fileURLToPath(new URL(".", import.meta.url));
     return {
       skillPaths: [
         resolve(extRoot, "skills", "understand"),
@@ -25,7 +25,64 @@ export default function (pi: ExtensionAPI) {
   // /understand is registered as a prompt template (prompts/understand.md)
   // via the pi.prompts field in package.json — no input event handler needed.
 
-  // ── /understand-dashboard command ─────────────────────────────────
+  // ── Auto-update: detect git commit/merge/rebase in bash tool results ────
+  pi.on("tool_result", async (event, ctx) => {
+    // Only care about bash tool results
+    if (event.toolName !== "bash") return;
+    // Check if the command was a git commit, merge, cherry-pick, or rebase
+    if (!/git\s+(commit|merge|cherry-pick|rebase)/.test((event.input as any).command ?? "")) return;
+
+    const cwd = ctx.cwd;
+    const configPath = resolve(cwd, ".understand-anything", "config.json");
+    const graphPath = resolve(cwd, ".understand-anything", "knowledge-graph.json");
+
+    // Bail if auto-update isn't enabled or no graph exists yet
+    let config: any;
+    try {
+      if (!existsSync(configPath) || !existsSync(graphPath)) return;
+      config = JSON.parse(readFileSync(configPath, "utf-8"));
+    } catch { return; }
+    if (!config.autoUpdate) return;
+
+    // Trigger the agent to run the auto-update flow
+    pi.sendUserMessage(
+      `[understand-anything] Git commit detected with auto-update enabled. ` +
+      `Incrementally update the knowledge graph — read the instructions at ` +
+      `${resolve(extRoot, "hooks", "auto-update-prompt.md")} ` +
+      `and follow them. Do not ask the user for confirmation — just do it.`,
+      { deliverAs: "steer" },
+    );
+  });
+
+  // ── Session start: warn if knowledge graph is stale ───────────────────
+  pi.on("session_start", async (event, ctx) => {
+    if (event.reason !== "startup" && event.reason !== "reload") return;
+
+    const cwd = ctx.cwd;
+    const configPath = resolve(cwd, ".understand-anything", "config.json");
+    const metaPath = resolve(cwd, ".understand-anything", "meta.json");
+    const graphPath = resolve(cwd, ".understand-anything", "knowledge-graph.json");
+
+    let config: any, meta: any;
+    try {
+      if (!existsSync(configPath) || !existsSync(metaPath) || !existsSync(graphPath)) return;
+      config = JSON.parse(readFileSync(configPath, "utf-8"));
+      meta = JSON.parse(readFileSync(metaPath, "utf-8"));
+    } catch { return; }
+    if (!config.autoUpdate) return;
+
+    try {
+      const { stdout } = await pi.exec("git", ["rev-parse", "HEAD"], { cwd });
+      const hash = stdout.trim();
+      if (meta.gitCommitHash !== hash) {
+        ctx.ui.setStatus("understand-anything", "Graph stale — /understand to update");
+      }
+    } catch {
+      // Not a git repo or git unavailable — ignore
+    }
+  });
+
+  // ── /understand-dashboard command ──────────────────────────────────────
   pi.registerCommand("understand-dashboard", {
     description: "Launch the interactive web dashboard to visualize a codebase's knowledge graph",
     handler: async (args, ctx) => {
