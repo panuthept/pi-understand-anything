@@ -13,15 +13,52 @@ const MIME_TYPES: Record<string, string> = {
   ".ico": "image/x-icon",
 };
 
-interface ServerInstance {
+// ponytail: data-only files the dashboard fetches. Map them to project dir.
+// Add if the dashboard gains new fetches.
+const DATA_ROUTES = new Set([
+  "knowledge-graph.json",
+  "meta.json",
+  "config.json",
+  "diff-overlay.json",
+  "domain-graph.json",
+]);
+
+/** Strip query string from a URL pathname. */
+function cleanUrl(raw: string): string {
+  const idx = raw.indexOf("?");
+  return idx >= 0 ? raw.slice(0, idx) : raw;
+}
+
+/** Serve a JSON file from the project's /.understand-anything/ directory. */
+function serveProjectFile(
+  filename: string,
+  projectRoot: string,
+  res: import("node:http").ServerResponse,
+) {
+  const filePath = pathResolve(projectRoot, ".understand-anything", filename);
+  if (!existsSync(filePath)) {
+    res.writeHead(404, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: `${filename} not found. Run /understand first.` }));
+    return;
+  }
+  const content = readFileSync(filePath, "utf-8");
+  res.writeHead(200, {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  });
+  res.end(content);
+}
+
+export interface ServerInstance {
   url: string;
   close: () => void;
 }
 
 /**
  * Start a static HTTP server for the dashboard.
- * Reads knowledge-graph.json from projectRoot/.understand-anything/
- * and serves the dashboard build as static files.
+ * Serves the dashboard build as static files.
+ * Data files (knowledge-graph.json, meta.json, etc.) are served from
+ * projectRoot/.understand-anything/ instead of the build directory.
  */
 export function startDashboardServer(projectRoot: string): Promise<ServerInstance> {
   return new Promise((resolve, reject) => {
@@ -29,31 +66,31 @@ export function startDashboardServer(projectRoot: string): Promise<ServerInstanc
     const port = 0; // random available port
 
     const server = createServer((req, res) => {
-      // Health check / knowledge graph API endpoint
-      if (req.url === "/api/graph") {
-        const graphPath = pathResolve(projectRoot, ".understand-anything", "knowledge-graph.json");
-        if (!existsSync(graphPath)) {
-          res.writeHead(404, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ error: "knowledge-graph.json not found. Run /understand first." }));
-          return;
-        }
-        const graph = readFileSync(graphPath, "utf-8");
-        res.writeHead(200, {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        });
-        res.end(graph);
-        return;
-      }
-
       if (!req.url) {
         res.writeHead(400);
         res.end("Bad Request");
         return;
       }
 
-      // Serve static files from the dashboard build
-      let filePath = pathResolve(buildDir, req.url === "/" ? "index.html" : req.url.slice(1));
+      const pathname = cleanUrl(req.url);
+
+      // ── Data routes: serve from project dir ──────────────────────
+      if (pathname.startsWith("/")) {
+        const filename = pathname.slice(1);
+        if (DATA_ROUTES.has(filename)) {
+          serveProjectFile(filename, projectRoot, res);
+          return;
+        }
+      }
+
+      // Backward compat alias
+      if (pathname === "/api/graph") {
+        serveProjectFile("knowledge-graph.json", projectRoot, res);
+        return;
+      }
+
+      // ── Static files: serve from build dir ───────────────────────
+      let filePath = pathResolve(buildDir, pathname === "/" ? "index.html" : pathname.slice(1));
 
       // Security: ensure we don't serve outside the build directory
       if (!filePath.startsWith(buildDir)) {

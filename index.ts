@@ -2,8 +2,11 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { startDashboardServer } from "./src/serve-dashboard.js";
+import { startDashboardServer, type ServerInstance } from "./src/serve-dashboard.js";
 import { resolveDashboardBuild } from "./src/paths.js";
+
+// ponytail: single server, global. Multiple servers later if concurrent sessions need it.
+let currentServer: ServerInstance | null = null;
 
 export default function (pi: ExtensionAPI) {
   const extRoot = fileURLToPath(new URL(".", import.meta.url));
@@ -101,11 +104,32 @@ export default function (pi: ExtensionAPI) {
       }
 
       try {
+        if (currentServer) {
+          ctx.ui.notify("Dashboard already running. Stop it first with /understand-dashboard-stop.", "warning");
+          return;
+        }
         const server = await startDashboardServer(projectRoot);
-        ctx.ui.notify(`Dashboard running at ${server.url}`, "info");
+        currentServer = server;
+        // ponytail: static token, server doesn't validate it. Rotate if token gate ever becomes real auth.
+        const tokenizedUrl = `${server.url}?token=understand-anything`;
+        ctx.ui.notify(`Dashboard running at ${tokenizedUrl}`, "info");
       } catch (err) {
         ctx.ui.notify(`Failed to start dashboard: ${err}`, "error");
       }
+    },
+  });
+
+  // ── /understand-dashboard-stop command ───────────────────────────
+  pi.registerCommand("understand-dashboard-stop", {
+    description: "Stop the interactive web dashboard",
+    handler: async (_args, ctx) => {
+      if (!currentServer) {
+        ctx.ui.notify("No dashboard is currently running.", "info");
+        return;
+      }
+      currentServer.close();
+      currentServer = null;
+      ctx.ui.notify("Dashboard stopped.", "info");
     },
   });
 
