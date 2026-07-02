@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve as pathResolve, extname } from "node:path";
-import { resolveDashboardBuild, resolveUaRoot } from "./paths.js";
+import { resolveDashboardBuild } from "./paths.js";
 
 const MIME_TYPES: Record<string, string> = {
   ".html": "text/html",

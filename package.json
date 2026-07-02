@@ -18,10 +18,19 @@
     ],
     "skills": [
       "./skills"
+    ],
+    "prompts": [
+      "./prompts"
     ]
   },
   "dependencies": {
-    "typescript": "^6.0.3"
+    "fuse.js": "^7.4.2",
+    "graphology": "^0.26.0",
+    "graphology-communities-louvain": "^2.0.2",
+    "ignore": "^7.0.5",
+    "typescript": "^6.0.3",
+    "yaml": "^2.9.0",
+    "zod": "^4.4.3"
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": ">=0.74.0"

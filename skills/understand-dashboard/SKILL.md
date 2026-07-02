@@ -30,54 +30,36 @@ Start the Understand Anything dashboard to visualize the knowledge graph for the
      - `~/.pi/understand-anything/understand-anything-plugin/packages/dashboard/`
      - `~/understand-anything/understand-anything-plugin/packages/dashboard/`
 
-   Use the Bash tool to resolve:
-   ```bash
-   SKILL_REAL=$(realpath ~/.pi/agent/extensions/pi-understand-anything/skills/understand-dashboard 2>/dev/null || readlink -f ~/.pi/agent/extensions/pi-understand-anything/skills/understand-dashboard 2>/dev/null || echo "")
-   SELF_RELATIVE=$([ -n "$SKILL_REAL" ] && cd "$SKILL_REAL/../.." 2>/dev/null && pwd || echo "")
+   This extension ships a pre-built dashboard at `dashboard-dist/`. Use the `/understand-dashboard` extension command to launch it — it resolves the build path automatically.
 
-   PLUGIN_ROOT=""
-   for candidate in \
-     "${CLAUDE_PLUGIN_ROOT}" \
-     "$HOME/.understand-anything-plugin" \
-     "$SELF_RELATIVE" \
-     "$HOME/.pi/agent/extensions/Understand-Anything/understand-anything-plugin" \
-     "$HOME/.codex/understand-anything/understand-anything-plugin" \
-     "$HOME/.opencode/understand-anything/understand-anything-plugin" \
-     "$HOME/.pi/understand-anything/understand-anything-plugin" \
-     "$HOME/understand-anything/understand-anything-plugin"; do
-     if [ -n "$candidate" ] && [ -d "$candidate/packages/dashboard" ]; then
-       PLUGIN_ROOT="$candidate"; break
-     fi
-   done
+   If you need the source (Vite dev server), resolve the extension root:
+   ```bash
+   SKILL_REAL=$(realpath ~/.pi/agent/extensions/pi-understand-anything/skills/understand-dashboard 2>/dev/null || echo "")
+   PLUGIN_ROOT=$([ -n "$SKILL_REAL" ] && cd "$SKILL_REAL/../.." 2>/dev/null && pwd || echo "")
 
    if [ -z "$PLUGIN_ROOT" ]; then
-     echo "Error: Cannot find the understand-anything plugin root."
-     echo "Checked:"
-     echo "  - ${CLAUDE_PLUGIN_ROOT:-<unset CLAUDE_PLUGIN_ROOT>}"
-     echo "  - $HOME/.understand-anything-plugin"
-     echo "  - ${SELF_RELATIVE:-<unresolved path derived from ~/.pi/agent/extensions/pi-understand-anything/skills/understand-dashboard>}"
-     echo "  - $HOME/.pi/agent/extensions/Understand-Anything/understand-anything-plugin"
-     echo "  - $HOME/.codex/understand-anything/understand-anything-plugin"
-     echo "  - $HOME/.opencode/understand-anything/understand-anything-plugin"
-     echo "  - $HOME/.pi/understand-anything/understand-anything-plugin"
-     echo "  - $HOME/understand-anything/understand-anything-plugin"
-     echo "Make sure you followed the installation instructions for your platform."
+     echo "Error: Cannot find the pi-understand-anything extension root."
+     exit 1
+   fi
+
+   DASHBOARD_DIR="$PLUGIN_ROOT/dashboard-dist"
+   if [ ! -d "$DASHBOARD_DIR" ]; then
+     echo "Error: dashboard-dist/ not found at $DASHBOARD_DIR"
      exit 1
    fi
    ```
 
-4. Install dependencies and build if needed:
-   ```bash
-   cd <dashboard-dir> && pnpm install --frozen-lockfile 2>/dev/null || pnpm install
-   ```
-   Then ensure the core package is built (the dashboard depends on it):
-   ```bash
-   cd <plugin-root> && pnpm --filter @understand-anything/core build
-   ```
+4. The pre-built dashboard is at `dashboard-dist/`. Use the `/understand-dashboard` extension command to serve it as static files (no Vite needed).
 
-5. Start the Vite dev server pointing at the project's knowledge graph:
+   If you need the Vite dev server (e.g. for development), you'll need the Understand-Anything source repository.
+
+5. Start the pre-built dashboard server via the extension command:
    ```bash
-   cd <dashboard-dir> && GRAPH_DIR=<project-dir> npx vite --host 127.0.0.1
+   # The /understand-dashboard command handles this automatically
+   ```
+   Or serve the static files directly:
+   ```bash
+   cd $PLUGIN_ROOT && npx serve dashboard-dist
    ```
    Run this in the background so the user can continue working.
 

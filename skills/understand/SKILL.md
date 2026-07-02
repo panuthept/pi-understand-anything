@@ -70,53 +70,26 @@ Determine whether to run a full analysis or incremental update.
      ```
 
      Set `UNDERSTAND_NO_WORKTREE_REDIRECT=1` if you intentionally want a per-worktree graph (rare — most users want the redirect).
-1.5. **Ensure the plugin is built.** Later phases invoke Node scripts that import `@understand-anything/core`. On a fresh install `packages/core/dist/` does not exist yet — build once.
+1.5. **Verify the plugin is available.** Later phases invoke Node scripts that import `@understand-anything/core`. This extension ships self-contained with the core package already in `node_modules/`.
 
-   **Important:** do **not** assume the plugin root is simply two directories above the skill path string. In many installations `~/.pi/agent/extensions/pi-understand-anything/skills/understand` is a symlink into the real plugin checkout. Prefer runtime-provided plugin roots first (for pi), then fall back to universal symlinks, skill symlink resolution, and common clone-based install paths.
-
-   Resolve the plugin root like this:
+   Resolve the plugin root (the pi-understand-anything extension directory, parent of `skills/understand/`):
 
    ```bash
-   SKILL_REAL=$(realpath ~/.pi/agent/extensions/pi-understand-anything/skills/understand 2>/dev/null || readlink -f ~/.pi/agent/extensions/pi-understand-anything/skills/understand 2>/dev/null || echo "")
-   SELF_RELATIVE=$([ -n "$SKILL_REAL" ] && cd "$SKILL_REAL/../.." 2>/dev/null && pwd || echo "")
-   COPILOT_SKILL_REAL=$(realpath ~/.copilot/skills/understand 2>/dev/null || readlink -f ~/.copilot/skills/understand 2>/dev/null || echo "")
-   COPILOT_SELF_RELATIVE=$([ -n "$COPILOT_SKILL_REAL" ] && cd "$COPILOT_SKILL_REAL/../.." 2>/dev/null && pwd || echo "")
+   SKILL_REAL=$(realpath "$PROJECT_ROOT/.pi/agent/extensions/pi-understand-anything/skills/understand" 2>/dev/null || realpath ~/.pi/agent/extensions/pi-understand-anything/skills/understand 2>/dev/null || echo "")
+   PLUGIN_ROOT=$([ -n "$SKILL_REAL" ] && cd "$SKILL_REAL/../.." 2>/dev/null && pwd || echo "")
 
-   PLUGIN_ROOT=""
-   for candidate in \
-     "$HOME/.pi/agent/extensions/Understand-Anything/understand-anything-plugin" \
-     "$HOME/.understand-anything-plugin" \
-     "$SELF_RELATIVE" \
-     "$COPILOT_SELF_RELATIVE" \
-     "$HOME/.codex/understand-anything/understand-anything-plugin" \
-     "$HOME/.opencode/understand-anything/understand-anything-plugin" \
-     "$HOME/.pi/understand-anything/understand-anything-plugin" \
-     "$HOME/.pi/agent/extensions/Understand-Anything/understand-anything-plugin" \
-     "$HOME/understand-anything/understand-anything-plugin"; do
-     if [ -n "$candidate" ] && [ -f "$candidate/package.json" ] && [ -f "$candidate/pnpm-workspace.yaml" ]; then
-       PLUGIN_ROOT="$candidate"
-       break
-     fi
-   done
-
-   if [ -z "$PLUGIN_ROOT" ]; then
-     echo "Error: Cannot find the understand-anything plugin root."
-     echo "Checked:"
-     echo "  - $HOME/.pi/agent/extensions/Understand-Anything/understand-anything-plugin"
-     echo "  - $HOME/.understand-anything-plugin"
-     echo "  - ${SELF_RELATIVE:-<unresolved path derived from ~/.pi/agent/extensions/pi-understand-anything/skills/understand>}"
-     echo "  - ${COPILOT_SELF_RELATIVE:-<unresolved path derived from ~/.copilot/skills/understand>}"
-     echo "  - $HOME/.codex/understand-anything/understand-anything-plugin"
-     echo "  - $HOME/.opencode/understand-anything/understand-anything-plugin"
-     echo "  - $HOME/.pi/understand-anything/understand-anything-plugin"
-     echo "  - $HOME/.pi/agent/extensions/Understand-Anything/understand-anything-plugin"
-     echo "  - $HOME/understand-anything/understand-anything-plugin"
-     echo "Make sure the plugin is installed correctly."
+   if [ -z "$PLUGIN_ROOT" ] || [ ! -f "$PLUGIN_ROOT/package.json" ]; then
+     echo "Error: Cannot find the pi-understand-anything extension root."
+     echo "Checked SKILL_REAL: ${SKILL_REAL:-unresolved}"
+     echo "Expected package.json at:\${PLUGIN_ROOT:+  - }$PLUGIN_ROOT/package.json"
      exit 1
    fi
 
-   if [ ! -f "$PLUGIN_ROOT/packages/core/dist/index.js" ]; then
-     cd "$PLUGIN_ROOT" && (pnpm install --frozen-lockfile 2>/dev/null || pnpm install) && pnpm --filter @understand-anything/core build
+   CORE_DIST="$PLUGIN_ROOT/node_modules/@understand-anything/core/dist/index.js"
+   if [ ! -f "$CORE_DIST" ]; then
+     echo "Error: @understand-anything/core not found at $CORE_DIST"
+     echo "The extension shipped incomplete. Reinstall pi-understand-anything."
+     exit 1
    fi
    ```
 

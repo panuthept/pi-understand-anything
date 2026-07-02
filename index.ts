@@ -22,16 +22,8 @@ export default function (pi: ExtensionAPI) {
     };
   });
 
-  // ── /understand command ───────────────────────────────────────────
-  pi.registerCommand("understand", {
-    description: "Analyze a codebase and produce an interactive knowledge graph for understanding architecture, components, and relationships",
-    handler: async (args, ctx) => {
-      ctx.ui.notify("Running /understand — following the skill instructions to analyze the codebase.", "info");
-      // The actual pipeline orchestration is driven by the skill content
-      // (skills/understand/SKILL.md) — the LLM reads it and executes phases 0-7
-      // using pi tools and pi-subagents Agent tool.
-    },
-  });
+  // /understand is registered as a prompt template (prompts/understand.md)
+  // via the pi.prompts field in package.json — no input event handler needed.
 
   // ── /understand-dashboard command ─────────────────────────────────
   pi.registerCommand("understand-dashboard", {
