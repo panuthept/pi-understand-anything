@@ -1,3 +1,4 @@
 node_modules/
 .superpowers/sdd/*.diff
 .superpowers/sdd/progress.md
+dashboard-dist/knowledge-graph.json

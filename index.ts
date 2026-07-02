@@ -52,35 +52,7 @@ export default function (pi: ExtensionAPI) {
     },
   });
 
-  // ── /understand-knowledge command ─────────────────────────────────
-  pi.registerCommand("understand-knowledge", {
-    description: "Analyze a Karpathy-pattern LLM wiki knowledge base and generate an interactive knowledge graph",
-    handler: async (args, ctx) => {
-      ctx.ui.notify("Running /understand-knowledge — following the skill instructions.", "info");
-    },
-  });
-
-  // ── /understand-explain command ───────────────────────────────────
-  pi.registerCommand("understand-explain", {
-    description: "Provide a thorough, in-depth explanation of a specific code component from the knowledge graph",
-    handler: async (args, ctx) => {
-      ctx.ui.notify("Running /understand-explain — following the skill instructions.", "info");
-    },
-  });
-
-  // ── /understand-diff command ──────────────────────────────────────
-  pi.registerCommand("understand-diff", {
-    description: "Analyze git diffs or pull requests against the knowledge graph to understand what changed",
-    handler: async (args, ctx) => {
-      ctx.ui.notify("Running /understand-diff — following the skill instructions.", "info");
-    },
-  });
-
-  // ── /understand-onboard command ───────────────────────────────────
-  pi.registerCommand("understand-onboard", {
-    description: "Generate an onboarding guide for new team members from the project's knowledge graph",
-    handler: async (args, ctx) => {
-      ctx.ui.notify("Running /understand-onboard — following the skill instructions.", "info");
-    },
-  });
+  // /understand-knowledge, /understand-explain, /understand-diff, /understand-onboard
+  // are registered as prompt templates (prompts/). Extension commands would shadow them,
+  // so no command registration here — they fall through to template expansion.
 }
