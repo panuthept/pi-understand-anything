@@ -100,7 +100,7 @@ git -C ~/.pi/agent/extensions commit -m "scaffold: pi-understand-anything extens
 - Consumes: File system layout (UA monorepo location)
 - Produces: `resolveUaRoot(): string`, `resolveDashboardBuild(): string`, `resolveSkillDir(skillName: string): string`
 
-- [ ] **Step 1: Write src/paths.ts**
+- [x] **Step 1: Write src/paths.ts**
 
 ```typescript
 import { existsSync } from "node:fs";
@@ -175,7 +175,7 @@ export function resolvePiSkillDir(skillName: string): string {
 }
 ```
 
-- [ ] **Step 2: Verify file exists and is valid TypeScript**
+- [x] **Step 2: Verify file exists and is valid TypeScript**
 
 ```bash
 npx tsc --noEmit --strict ~/.pi/agent/extensions/pi-understand-anything/src/paths.ts 2>&1 || echo "Need tsconfig context"
