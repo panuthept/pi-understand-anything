@@ -1,0 +1,16 @@
+{
+  "name": "pi-understand-anything",
+  "version": "0.1.0",
+  "description": "Pi extension wrapping Understand-Anything — codebase analysis, knowledge graphs, and interactive dashboard",
+  "type": "module",
+  "keywords": ["pi-package", "pi", "pi-coding-agent", "extension", "codebase-analysis", "knowledge-graph"],
+  "license": "MIT",
+  "pi": {
+    "extensions": ["./index.ts"],
+    "skills": ["./skills"]
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": ">=0.74.0"
+  }
+}
