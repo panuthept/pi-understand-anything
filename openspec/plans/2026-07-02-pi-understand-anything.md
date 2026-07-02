@@ -610,26 +610,7 @@ Expected: File present, reasonable size (>1000 bytes for the pipeline content).
 **Files:**
 - Create: `~/.pi/agent/extensions/pi-understand-anything/skills/understand-explain/SKILL.md`
 
-- [ ] **Step 1: Copy and adapt**
-
-Porting changes:
-1. `Grep` → `grep` (or use `bash grep`)
-2. All tool references lowercase
-3. The content is almost entirely LLM-facing instructions — minimal changes needed
-
-```markdown
----
-name: understand-explain
-description: Use when you need a deep-dive explanation of a specific file, function, or module in the codebase
-argument-hint: [file-path]
----
-
-# /understand-explain
-
-[Original content with tool references adapted: Grep → grep, Read → read]
-```
-
-The original is ~60 lines and mostly describes how to search the knowledge graph and present findings. Tool references are few (`Grep`, `Read`).
+- [x] **Step 1: Copy and adapt**
 
 ---
 
@@ -638,20 +619,7 @@ The original is ~60 lines and mostly describes how to search the knowledge graph
 **Files:**
 - Create: `~/.pi/agent/extensions/pi-understand-anything/skills/understand-diff/SKILL.md`
 
-- [ ] **Step 1: Copy and adapt**
-
-Same pattern: lower tool names, everything else verbatim.
-
-```markdown
----
-name: understand-diff
-description: Use when you need to analyze git diffs or pull requests to understand what changed, affected components, and risks
----
-
-# /understand-diff
-
-[Original content with tool references adapted]
-```
+- [x] **Step 1: Copy and adapt**
 
 ---
 
@@ -660,18 +628,7 @@ description: Use when you need to analyze git diffs or pull requests to understa
 **Files:**
 - Create: `~/.pi/agent/extensions/pi-understand-anything/skills/understand-onboard/SKILL.md`
 
-- [ ] **Step 1: Copy and adapt**
-
-```markdown
----
-name: understand-onboard
-description: Use when you need to generate an onboarding guide for new team members joining a project
----
-
-# /understand-onboard
-
-[Original content with tool references adapted]
-```
+- [x] **Step 1: Copy and adapt**
 
 ---
 
