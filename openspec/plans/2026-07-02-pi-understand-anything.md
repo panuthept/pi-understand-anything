@@ -600,35 +600,8 @@ Expected: File present, reasonable size (>1000 bytes for the pipeline content).
 **Files:**
 - Create: `~/.pi/agent/extensions/pi-understand-anything/skills/understand-knowledge/SKILL.md`
 
-- [ ] **Step 1: Copy and adapt the skill**
-
-Porting changes:
-1. `python3` script paths → resolve relative to the skill's installed location
-2. `CLAUDE_PLUGIN_ROOT` → pi extension paths
-3. Agent dispatch syntax stays the same
-
-The original script paths reference `<SKILL_DIR>/parse-knowledge-base.py` and `<SKILL_DIR>/merge-knowledge-graph.py`. In pi, these are bundled as Python scripts alongside the skill. We don't need to change the Python scripts themselves — they're called via bash.
-
-```markdown
----
-name: understand-knowledge
-description: Analyze a Karpathy-pattern LLM wiki knowledge base and generate an interactive knowledge graph with entity extraction and topic clustering.
-argument-hint: [wiki-directory]
----
-
-# /understand-knowledge
-
-[... adapted content ...]
-```
-
-Key adaptation: The original references `skills/understand-knowledge/` for script resolution. In pi, scripts live alongside the SKILL.md. The script paths `parse-knowledge-base.py` and `merge-knowledge-graph.py` are resolved relative to the skill directory.
-
-- [ ] **Step 2: Copy supporting Python scripts**
-
-```bash
-cp ~/.pi/agent/extensions/Understand-Anything/understand-anything-plugin/skills/understand-knowledge/parse-knowledge-base.py ~/.pi/agent/extensions/pi-understand-anything/skills/understand-knowledge/
-cp ~/.pi/agent/extensions/Understand-Anything/understand-anything-plugin/skills/understand-knowledge/merge-knowledge-graph.py ~/.pi/agent/extensions/pi-understand-anything/skills/understand-knowledge/
-```
+- [x] **Step 1: Copy and adapt the skill**
+- [x] **Step 2: Copy supporting Python scripts**
 
 ---
 
