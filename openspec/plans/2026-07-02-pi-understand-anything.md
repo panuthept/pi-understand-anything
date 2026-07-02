@@ -589,64 +589,9 @@ Expected: File present, reasonable size (>1000 bytes for the pipeline content).
 **Files:**
 - Create: `~/.pi/agent/extensions/pi-understand-anything/skills/understand-dashboard/SKILL.md`
 
-- [ ] **Step 1: Copy and adapt the skill**
+- [x] **Step 1: Copy and adapt the skill**
 
-Porting changes:
-1. Dashboard path search: add pi-specific paths to the candidate list
-2. Tool names: `Bash` → `bash`, `Read` → `read`
-3. The instruction flow stays the same
-
-```markdown
----
-name: understand-dashboard
-description: Launch the interactive web dashboard to visualize a codebase's knowledge graph
-argument-hint: [project-path]
----
-
-# /understand-dashboard
-
-Start the Understand Anything dashboard to visualize the knowledge graph for the current project.
-
-## Instructions
-
-1. Determine the project directory:
-   - If `$ARGUMENTS` contains a path, use that as the project directory
-   - Otherwise, use the current working directory
-
-2. Check that `.understand-anything/knowledge-graph.json` exists in the project directory. If not, tell the user:
-   ```
-   No knowledge graph found. Run /understand first to analyze this project.
-   ```
-
-3. Find the dashboard code. The dashboard is at `packages/dashboard/` relative to the understand-anything plugin root. Check these paths in order and use the first that exists:
-   - `${CLAUDE_PLUGIN_ROOT}/packages/dashboard/` (Claude Code runtime root, highest priority)
-   - `~/.understand-anything-plugin/packages/dashboard/` (universal symlink)
-   - Two levels up from skill realpath fallback
-   - `~/.pi/agent/extensions/Understand-Anything/understand-anything-plugin/packages/dashboard/`
-   - `~/.pi/understand-anything/understand-anything-plugin/packages/dashboard/`
-   - `~/understand-anything/understand-anything-plugin/packages/dashboard/`
-
-   Use the Bash tool to resolve:
-   ```bash
-   SKILL_REAL=$(realpath ~/.pi/agent/extensions/pi-understand-anything/skills/understand-dashboard 2>/dev/null || echo "")
-   SELF_RELATIVE=$([ -n "$SKILL_REAL" ] && cd "$SKILL_REAL/../../.." 2>/dev/null && pwd || echo "")
-
-   PLUGIN_ROOT=""
-   for candidate in \
-     "${CLAUDE_PLUGIN_ROOT}" \
-     "$SELF_RELATIVE" \
-     "$HOME/.understand-anything-plugin" \
-     "$HOME/.pi/agent/extensions/Understand-Anything/understand-anything-plugin" \
-     "$HOME/.pi/understand-anything/understand-anything-plugin" \
-     "$HOME/understand-anything/understand-anything-plugin"; do
-     if [ -n "$candidate" ] && [ -d "$candidate/packages/dashboard" ]; then
-       PLUGIN_ROOT="$candidate"; break
-     fi
-   done
-   [... rest of dashboard skill ...]
-```
-
-- [ ] **Step 2: Verify file exists**
+- [x] **Step 2: Verify file exists**
 
 ---
 
